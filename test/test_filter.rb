@@ -34,6 +34,10 @@ class TestFilter < Test::Unit::TestCase
       BlogPost.filter("work lalala").should == [@blogpost]
     end
 
+    should "return the query regexp " do
+      BlogPost.query_regexp("work lalala").should == /^(work|lalala).*/
+    end
+
     should "allow to paginate results" do
       results = BlogPost.filter("tag", :per_page => 1, :page => 1)
       results.should == [@blogpost]

@@ -26,15 +26,21 @@ module MongoMapperExt
       end
 
       def filter(query, opts = {})
+        q = query_regexp(query)
+        if opts[:per_page]
+          result = self.paginate(opts.deep_merge(:conditions => {:_keywords => q }))
+        else
+          result = self.find(:all, opts.deep_merge(:conditions => {:_keywords => q }))
+        end
+      end
+
+      def query_regexp(query)
         q = query.downcase.split.map do |k|
           Regexp.escape(k)
         end.join("|")
-        if opts[:per_page]
-          self.paginate(opts.deep_merge(:conditions => {:_keywords => /^(#{q}).*/ }))
-        else
-          self.find(:all, opts.deep_merge(:conditions => {:_keywords => /^(#{q}).*/ }))
-        end
+        /^(#{q}).*/
       end
+
     end
 
     protected
